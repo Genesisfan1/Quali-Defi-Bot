@@ -1,0 +1,9 @@
+node_modules
+.git
+.gitignore
+dist
+encryption
+storage.json
+.env
+*.log
+*.cache

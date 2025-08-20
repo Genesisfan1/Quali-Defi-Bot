@@ -1,0 +1,30 @@
+{
+  "name": "quali-defi-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node-esm src/index.ts",
+    "build": "tsc -p .",
+    "start": "node dist/src/index.js",
+    "test": "vitest run",
+    "rebuild": "powershell -ExecutionPolicy Bypass -File ./scripts/rebuild-and-restart.ps1"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.1",
+    "axios": "^1.7.4",
+    "dayjs": "^1.11.11",
+    "fastify": "^4.28.1",
+    "matrix-bot-sdk": "^0.6.5",
+    "xml2js": "^0.6.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@types/xml2js": "^0.4.14",
+    "vitest": "^1.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}

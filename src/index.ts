@@ -9,11 +9,11 @@ import {
 } from "matrix-bot-sdk";
 import Fastify from "fastify";
 import { registerSigningRoutes } from "./signing.js";
-import { renderMenu, renderQuoteCard, renderNewsList } from "./views.js";
+import { renderMenu, renderQuoteCard, renderNewsList, renderNewsTimeframeMenu } from "./views.js";
 import { parseUserMessage, Intent } from "./nlu.js";
 import { getQuote, QuoteRequest } from "./uniswap.js";
 import { resolveTokenPair } from "./tokens.js";
-import { getLatestNews } from "./news.js";
+import { getLatestNews, getTopNews, getMostViewed } from "./news.js";
 import { getSession, setSession, resetSession, createActionTicket, consumeActionTicket } from "./state.js";
 import { performSwap } from "./swap.js";
 import dotenv from "dotenv";
@@ -122,11 +122,19 @@ async function handleAdminCommand(roomId: string, body: string) {
       return;
     }
     case Intent.NEWS: {
-      const list = await getLatestNews();
+      const actionBase = APP_BASE_URL || `http://localhost:${PORT}`;
+      const menu = renderNewsTimeframeMenu(actionBase, roomId, createActionTicket);
+      await client.sendHtmlText(roomId, menu);
+      return;
+    }
+    case Intent.NEWS_TIMEFRAME: {
+      const tf = parsed.timeframe || "24h";
+      const list = await getMostViewed(tf as any);
       const actionBase = APP_BASE_URL || `http://localhost:${PORT}`;
       const back = createActionTicket(roomId, "!back");
       const actions = `<a href="${actionBase}/act?id=${back}"><b>BACK</b></a>`;
-      const html = renderNewsList(list, actions);
+      const title = `Top headlines (last ${tf.toUpperCase()})`;
+      const html = renderNewsList(list, actions, title);
       await client.sendHtmlText(roomId, html);
       return;
     }
@@ -283,11 +291,19 @@ export async function onRoomMessage(c: MatrixClient, roomId: string, event: any)
         break;
       }
       case Intent.NEWS: {
-        const list = await getLatestNews();
+        const actionBase = APP_BASE_URL || `http://localhost:${PORT}`;
+        const html = renderNewsTimeframeMenu(actionBase, roomId, createActionTicket);
+        await c.sendHtmlText(roomId, html);
+        break;
+      }
+      case Intent.NEWS_TIMEFRAME: {
+        const tf = parsed.timeframe || "24h";
+        const list = await getMostViewed(tf as any);
         const actionBase = APP_BASE_URL || `http://localhost:${PORT}`;
         const back = createActionTicket(roomId, "!back");
         const actions = `<a href="${actionBase}/act?id=${back}"><b>BACK</b></a>`;
-        const html = renderNewsList(list, actions);
+        const title = `Top headlines (last ${tf.toUpperCase()})`;
+        const html = renderNewsList(list, actions, title);
         await c.sendHtmlText(roomId, html);
         break;
       }

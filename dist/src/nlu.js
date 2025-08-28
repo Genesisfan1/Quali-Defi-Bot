@@ -4,6 +4,7 @@ export var Intent;
     Intent["MENU"] = "MENU";
     Intent["SWAP"] = "SWAP";
     Intent["NEWS"] = "NEWS";
+    Intent["NEWS_TIMEFRAME"] = "NEWS_TIMEFRAME";
     Intent["ADJUST_SLIPPAGE"] = "ADJUST_SLIPPAGE";
     Intent["ACCEPT"] = "ACCEPT";
     Intent["CONFIRM"] = "CONFIRM";
@@ -29,6 +30,9 @@ export function parseUserMessage(text, _session) {
         return { intent: Intent.SWAP };
     if (t === "news")
         return { intent: Intent.NEWS };
+    const newsTf = t.match(/^news\s+(1h|24h|7d|1m)$/);
+    if (newsTf)
+        return { intent: Intent.NEWS_TIMEFRAME, timeframe: newsTf[1] };
     if (t === "accept")
         return { intent: Intent.ACCEPT };
     if (t === "confirm")

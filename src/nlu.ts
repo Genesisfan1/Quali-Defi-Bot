@@ -3,6 +3,7 @@ export enum Intent {
   MENU = "MENU",
   SWAP = "SWAP",
   NEWS = "NEWS",
+  NEWS_TIMEFRAME = "NEWS_TIMEFRAME",
   ADJUST_SLIPPAGE = "ADJUST_SLIPPAGE",
   ACCEPT = "ACCEPT",
   CONFIRM = "CONFIRM",
@@ -16,6 +17,7 @@ export type Parsed = {
   quote?: string;
   amount?: number;
   slippage?: number;
+  timeframe?: "1h" | "24h" | "7d" | "1m";
 };
 
 const START_WORDS = ["hi", "hello", "start", "menu"];
@@ -36,6 +38,8 @@ export function parseUserMessage(text: string, _session?: any): Parsed {
   if (START_WORDS.includes(t)) return { intent: Intent.MENU };
   if (t === "swap") return { intent: Intent.SWAP };
   if (t === "news") return { intent: Intent.NEWS };
+  const newsTf = t.match(/^news\s+(1h|24h|7d|1m)$/);
+  if (newsTf) return { intent: Intent.NEWS_TIMEFRAME, timeframe: newsTf[1] as any };
   if (t === "accept") return { intent: Intent.ACCEPT };
   if (t === "confirm") return { intent: Intent.CONFIRM };
   if (t === "cancel") return { intent: Intent.CANCEL };

@@ -28,7 +28,7 @@ export function renderQuoteCard(q, slippagePct, actionsHtml) {
   </div>
   `;
 }
-export function renderNewsList(items, actionsHtml) {
+export function renderNewsList(items, actionsHtml, title) {
     const top = items
         .slice(0, 10)
         .map((it, i) => {
@@ -39,10 +39,25 @@ export function renderNewsList(items, actionsHtml) {
         .join("<br/>");
     return `
   <div>
-    <p><b>Top headlines (last 24h)</b></p>
+    <p><b>${escapeHtml(title || 'Top headlines')}</b></p>
     <p>${top}</p>
     <p>${actionsHtml || 'Type <code>!back</code> to return to menu.'}</p>
   </div>
   `;
+}
+export function renderNewsTimeframeMenu(actionBase, roomId, createTicket) {
+    const t1 = createTicket(roomId, "!news 1h");
+    const t24 = createTicket(roomId, "!news 24h");
+    const t7 = createTicket(roomId, "!news 7d");
+    const t1m = createTicket(roomId, "!news 1m");
+    return `
+  <div>
+    <p><b>Select timeframe:</b>
+      <a href="${actionBase}/act?id=${t1}"><b>1H</b></a> |
+      <a href="${actionBase}/act?id=${t24}"><b>24H</b></a> |
+      <a href="${actionBase}/act?id=${t7}"><b>7D</b></a> |
+      <a href="${actionBase}/act?id=${t1m}"><b>1M</b></a>
+    </p>
+  </div>`;
 }
 function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c])); }
